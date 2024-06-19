@@ -1,6 +1,8 @@
 import wx
 import wx.html as html
 
+# TODO: Ver como quitar el tamaño fijo del HtmlPanel
+
 class HtmlPanel(wx.Panel):
     
     def __init__ (self, *args, **kwargs):

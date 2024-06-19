@@ -9,8 +9,13 @@ Fun fact: las funciones y constantes que realizan centrado están escritas tanto
 como en inglés británico (center & centre). Usen cualquiera XD
 """
 
-# TODO: Implementar wx.Accessible para los widgets. (Si es posible tal vez se pueda hacer en un archivo
-# .py aparte)
+"""
+TODO: Implementar wx.Accessible para los widgets. (Si es posible tal vez se pueda hacer en un archivo
+.py aparte)
+
+También tengan en cuenta que solo está implementado el HtmlWindow, aunque falta su wx.Accessible.
+Revisen el TODO del HtmlPanel también porque el atributo size está con un valor fijo
+"""
 class HTMLWndAccessibilityImpl(wx.Accessible):
 
     def __init__(self, widget):
