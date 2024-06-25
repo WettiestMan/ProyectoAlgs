@@ -3,6 +3,7 @@ import os
 from sys import argv
 from HtmlPanel import HtmlPanel
 from txting import MarkdownDoc
+from Accesible import HTMLWndAccessibilityImpl
 
 """
 Fun fact: las funciones y constantes que realizan centrado están escritas tanto en inglés americano
@@ -16,45 +17,22 @@ TODO: Implementar wx.Accessible para los widgets. (Si es posible tal vez se pued
 También tengan en cuenta que solo está implementado el HtmlWindow, aunque falta su wx.Accessible.
 Revisen el TODO del HtmlPanel también porque el atributo size está con un valor fijo
 """
-class HTMLWndAccessibilityImpl(wx.Accessible):
 
-    def __init__(self, widget):
-        super(HTMLWndAccessibilityImpl, self).__init__(wx.ACC_SELF)
-        self.widget = widget
-
-    def GetName(self, id):
-        return (wx.ACC_OK, "Documento")
-    
-    def GetRole(self, id):
-        return (wx.ACC_OK, wx.ROLE_SYSTEM_TEXT)
-    
-    def GetKeyboardShortcut(self, childId):
-        return (wx.ACC_OK, )
     
 class MainFrame(wx.Frame):
     
     def __init__(self, *args, **kwargs):
         
         # forwarding params
-        super(MainFrame, self).__init__(*args, **kwargs)
+        super(MainFrame, self).__init__(None , title="Complex Accessible wxPython Application", size=(1200, 700))
         self.createMenu()
         self.panel = HtmlPanel(self)
         self.Center()
+        self.htmlWnd.SetPage("")
         if(len(argv) >= 2):
             filepath = argv[1]
-            try:
-                with (open(filepath, 'r', encoding='UTF-8')) as file:
-                    self.htmlWnd.SetPage(MarkdownDoc(file).spit_html())
-            except OSError:
-                wx.MessageBox(f"""
-                El archivo {filepath} no pudo ser abierto.
-                Puede que el archivo no exista o no pueda ser leido por alguna
-                otra razón. Intente de nuevo o abra otro archivo.
-                """, "Error al abrir: {filepath}", wx.OK | wx.ICON_WARNING | wx.CENTRE,
-                None)
-                self.htmlWnd.SetPage("")
-        else:
-            self.htmlWnd.SetPage("")
+            self.loadFile(filepath)
+        
       
     def createMenu(self):
 
@@ -103,14 +81,21 @@ class MainFrame(wx.Frame):
                 return
             
             path = fdialg.GetPath()
-            try:
-                with open(path, 'r', encoding='UTF-8') as FILE:
-                    self.htmlWnd.SetPage(MarkdownDoc(FILE).spit_html())
-            except OSError:
-                wx.MessageBox(f"""
-                El archivo {path} no pudo ser abierto. Intente de nuevo o abra otro archivo.
-                """, "Error al abrir: {filepath}", wx.OK | wx.ICON_WARNING | wx.CENTER,
-                None)
+            self.loadFile(path)
+
+    def loadFile(self, filepath):
+        
+        try:
+            with (open(filepath, 'r', encoding='UTF-8')) as file:
+                self.htmlWnd.SetPage(MarkdownDoc(file).spit_html())
+        except OSError:
+            wx.MessageBox(f"""
+            El archivo {filepath} no pudo ser abierto.
+            Puede que el archivo no exista o no pueda ser leido por alguna
+            otra razón. Intente de nuevo o abra otro archivo.
+            """, "Error al abrir: {filepath}", wx.OK | wx.ICON_WARNING | wx.CENTRE,
+            None)
+
     
     def CloseApp(self, event):
         decision = wx.MessageBox("¿Está seguro de que desea salir?", "Salir", wx.YES_NO |
