@@ -5,17 +5,20 @@ import wx.html as html
 
 class HtmlPanel(wx.Panel):
     
-    def __init__ (self, *args, **kwargs):
+    def __init__ (self, parent, html="", size=(400, 600), *args, **kwargs):
         
-        super(HtmlPanel, self).__init__(*args, **kwargs)
-        htmlSizer = self.CreateHtmlPanelAndItsSizer(args[0])
-        mainSizer = wx.BoxSizer(wx.VERTICAL)
-        mainSizer.Add(htmlSizer, flag=wx.ALL, border=10)
-        self.SetSizerAndFit(mainSizer)
-        
-    def CreateHtmlPanelAndItsSizer(self, parent):
-        wndStyles = wx.VSCROLL | wx.HSCROLL | wx.BORDER_SIMPLE
-        parent.htmlWnd  =  html.HtmlWindow(self, id=wx.ID_ANY, size=(12000,12000), style=wndStyles)
+        super(HtmlPanel, self).__init__(parent, *args, **kwargs)
+
+        self.SetMinSize((800, 700))
+
+
+        self.browser = wx.html2.WebView.New(self)
+        self.setHtmlContent("")
+
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(parent.htmlWnd)
-        return sizer
+        sizer.Add(self.browser, 1, wx.EXPAND)
+        self.SetSizer(sizer)
+
+    
+    def setHtmlContent(self, HtmlContent):
+        self.browser.SetPage(HtmlContent, "")

@@ -4,6 +4,7 @@ from sys import argv
 from HtmlPanel import HtmlPanel
 from txting import MarkdownDoc
 from Accesible import HTMLWndAccessibilityImpl
+from IndexPanel import IndexPanel
 
 """
 Fun fact: las funciones y constantes que realizan centrado están escritas tanto en inglés americano
@@ -25,13 +26,23 @@ class MainFrame(wx.Frame):
         
         # forwarding params
         wx.Frame.__init__(self, parent, -1 , title)
+
+        self.SetMinSize(wx.Size(400, 300))
+
+        splitter = wx.SplitterWindow(self)
         self.createMenu()
-        self.panel = HtmlPanel(self)
+        self.htmlPanel = HtmlPanel(splitter, "")
+        self.buttonsPanel = IndexPanel(splitter)
         self.Center()
-        self.htmlWnd.SetPage("")
         if(len(argv) >= 2):
             filepath = argv[1]
             self.loadFile(filepath)
+
+
+        splitter.SplitVertically(self.buttonsPanel, self.htmlPanel, 100)
+        splitter.SetSashGravity(0.2)
+        
+        self.Show()
         
       
     def createMenu(self):
@@ -87,7 +98,7 @@ class MainFrame(wx.Frame):
         
         try:
             with (open(filepath, 'r', encoding='UTF-8')) as file:
-                self.htmlWnd.SetPage(MarkdownDoc(file).spit_html())
+                self.htmlPanel.setHtmlContent(MarkdownDoc(file).spit_html())
         except OSError:
             wx.MessageBox(f"""
             El archivo {filepath} no pudo ser abierto.
