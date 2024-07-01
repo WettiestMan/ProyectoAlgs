@@ -15,7 +15,7 @@ class HtmlPanel(wx.Panel):
         
     def CreateHtmlPanelAndItsSizer(self, parent):
         wndStyles = wx.VSCROLL | wx.HSCROLL | wx.BORDER_SIMPLE
-        parent.htmlWnd  =  html.HtmlWindow(self, id=wx.ID_ANY, size=(400,200), style=wndStyles)
+        parent.htmlWnd  =  html.HtmlWindow(self, id=wx.ID_ANY, size=(12000,12000), style=wndStyles)
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(parent.htmlWnd)
         return sizer

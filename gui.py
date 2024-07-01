@@ -21,10 +21,10 @@ Revisen el TODO del HtmlPanel también porque el atributo size está con un valo
     
 class MainFrame(wx.Frame):
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, parent, title):
         
         # forwarding params
-        super(MainFrame, self).__init__(None , title="Complex Accessible wxPython Application", size=(1200, 700))
+        wx.Frame.__init__(self, parent, -1 , title)
         self.createMenu()
         self.panel = HtmlPanel(self)
         self.Center()
@@ -109,11 +109,3 @@ class MainFrame(wx.Frame):
         # por el momento, solo emite un mensaje cualquiera
         wx.MessageBox("En desarrollo (-_- ) z z z", "En desarrollo", wx.OK |
                       wx.ICON_HAND | wx.CENTER)
-
-
-if __name__ == '__main__':
-
-    app = wx.App()
-    mframe = MainFrame(None, wx.ID_ANY, 'Window')
-    mframe.Show()
-    app.MainLoop()
