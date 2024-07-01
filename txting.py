@@ -7,7 +7,7 @@ class MarkdownDoc:
         if(FILE is None or FILE.closed):
             raise RuntimeError("Passed file handler is closed or not valid")
         
-        self.html = md.markdown(FILE.read(), output_format="html")
+        self.html = md.markdown(FILE.read(), output_format="html", extensions=['toc'])
     
     def spit_html (self):
         return self.html
