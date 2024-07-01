@@ -9,6 +9,7 @@ class HtmlPanel(wx.Panel):
         
         super(HtmlPanel, self).__init__(parent, *args, **kwargs)
 
+
         self.SetMinSize((800, 700))
 
 
@@ -22,3 +23,7 @@ class HtmlPanel(wx.Panel):
     
     def setHtmlContent(self, HtmlContent):
         self.browser.SetPage(HtmlContent, "")
+
+    def moveToHeader(self, headerId):
+        script = f"document.getElementById('{headerId}').scrollIntoView();"
+        self.browser.RunScript(script)
