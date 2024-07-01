@@ -43,6 +43,14 @@ class MainFrame(wx.Frame):
 
         splitter.SplitVertically(self.buttonsPanel, self.htmlPanel, 100)
         splitter.SetSashGravity(0.2)
+
+        entries = []
+        entries.append((wx.ACCEL_CTRL, ord('O'), self.GetMenuBar().GetMenu(0).GetMenuItem(0).GetId()))
+        entries.append((wx.ACCEL_CTRL, ord('Q'), self.GetMenuBar().GetMenu(0).GetMenuItem(1).GetId()))
+        entries.append((wx.ACCEL_CTRL, ord('H'), self.GetMenuBar().GetMenu(1).GetMenuItem(0).GetId()))
+
+        accTable = wx.AcceleratorTable(entries)
+        self.SetAcceleratorTable(accTable)
         
         self.Show()
         
@@ -72,14 +80,6 @@ class MainFrame(wx.Frame):
         menuBar.Append(helpSubMenu, "A&yuda")
 
         self.SetMenuBar(menuBar)
-
-        Accelerator = wx.AcceleratorTable([
-            (wx.ACCEL_CTRL, ord('O'), openItem.GetId()),
-            (wx.ACCEL_CTRL, ord('Q'), exitItem.GetId()),
-            (wx.ACCEL_CTRL, ord('H'), helpItem.GetId())
-        ])
-        
-        self.SetAcceleratorTable(Accelerator)
 
     def OpenFile(self, event):
 
