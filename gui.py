@@ -32,7 +32,7 @@ class MainFrame(wx.Frame):
 
         splitter = wx.SplitterWindow(self)
         self.createMenu()
-        self.htmlPanel = HtmlPanel(splitter, "")
+        self.htmlPanel = HtmlPanel(splitter, self, "")
         self.buttonsPanel = IndexPanel(splitter)
 
         self.Center()
@@ -44,42 +44,61 @@ class MainFrame(wx.Frame):
         splitter.SplitVertically(self.buttonsPanel, self.htmlPanel, 100)
         splitter.SetSashGravity(0.2)
 
-        entries = []
-        entries.append((wx.ACCEL_CTRL, ord('O'), self.GetMenuBar().GetMenu(0).GetMenuItem(0).GetId()))
-        entries.append((wx.ACCEL_CTRL, ord('Q'), self.GetMenuBar().GetMenu(0).GetMenuItem(1).GetId()))
-        entries.append((wx.ACCEL_CTRL, ord('H'), self.GetMenuBar().GetMenu(1).GetMenuItem(0).GetId()))
+        self.Bind(wx.EVT_CLOSE, self.cleanThings)
 
-        accTable = wx.AcceleratorTable(entries)
-        self.SetAcceleratorTable(accTable)
-        
         self.Show()
-        
-      
+    
+    def focusOnWebView(self, evt):
+        self.htmlPanel.SetFocus()
+    
+    def focusOnToc(self, evt):
+        self.buttonsPanel.SetFocus()
+    
     def createMenu(self):
 
-        fileSubMenu = wx.Menu()
+        try:
+            fileSubMenu = wx.Menu()
 
-        openItem = fileSubMenu.Append(wx.ID_OPEN, '&Abrir\tCtrl-O',
-                                      "Abrir un documento en formato markdown")
-        self.Bind(wx.EVT_MENU, self.OpenFile, openItem)
-        
-        fileSubMenu.AppendSeparator()
+            openItem = fileSubMenu.Append(wx.ID_OPEN, '&Abrir\tCtrl-O',
+                                        "Abrir un documento en formato markdown")
+            self.Bind(wx.EVT_MENU, self.OpenFile, openItem)
+            
+            fileSubMenu.AppendSeparator()
 
-        exitItem = fileSubMenu.Append(wx.ID_EXIT, "Salir\tCtrl-Q",
-                                      "Cerrar la aplicación")
-        self.Bind(wx.EVT_MENU, self.CloseApp, exitItem)
+            exitItem = fileSubMenu.Append(wx.ID_EXIT, "Salir\tCtrl-Q",
+                                        "Cerrar la aplicación")
+            self.Bind(wx.EVT_MENU, self.CloseApp, exitItem)
 
-        helpSubMenu = wx.Menu()
+            helpSubMenu = wx.Menu()
 
-        helpItem = helpSubMenu.Append(wx.ID_HELP_COMMANDS, 'A&tajos\tCtrl-H',
-                                      "Mostrar atajos del teclado")
-        self.Bind(wx.EVT_MENU, self.ShowShortcuts, helpItem)
+            helpItem = helpSubMenu.Append(wx.ID_HELP_COMMANDS, 'A&tajos\tCtrl-H',
+                                        "Mostrar atajos del teclado")
+            self.Bind(wx.EVT_MENU, self.ShowShortcuts, helpItem)
+            
+            menuBar = wx.MenuBar()
+            menuBar.Append(fileSubMenu, "&Archivo")
+            menuBar.Append(helpSubMenu, "A&yuda")
 
-        menuBar = wx.MenuBar()
-        menuBar.Append(fileSubMenu, "&Archivo")
-        menuBar.Append(helpSubMenu, "A&yuda")
+            (focusWebViewId, focusTocId) = [wx.NewId() for i in range(2)]
 
-        self.SetMenuBar(menuBar)
+            self.Bind(wx.EVT_MENU, self.focusOnToc, id=focusTocId)
+            self.Bind(wx.EVT_MENU, self.focusOnWebView, id=focusWebViewId)
+
+            self.entries = [
+                (wx.ACCEL_CTRL, ord('O'), openItem.GetId()),
+                (wx.ACCEL_CTRL, ord('Q'), exitItem.GetId()),
+                (wx.ACCEL_CTRL, ord('H'), helpItem.GetId()),
+                (wx.ACCEL_ALT, ord('1'), focusWebViewId),
+                (wx.ACCEL_ALT, ord('2'), focusTocId)
+            ]
+
+            self.accTable = wx.AcceleratorTable(self.entries)
+            self.SetAcceleratorTable(self.accTable)
+
+            self.SetMenuBar(menuBar)
+
+        except Exception:
+            print("???")
 
     def OpenFile(self, event):
 
@@ -91,10 +110,12 @@ class MainFrame(wx.Frame):
                                     style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fdialg:
             
             if fdialg.ShowModal() == wx.ID_CANCEL:
+                self.SetFocus()
                 return
             
             path = fdialg.GetPath()
             self.loadFile(path)
+            self.SetFocus()
 
     def loadFile(self, filepath):
         
@@ -114,10 +135,17 @@ class MainFrame(wx.Frame):
 
     
     def CloseApp(self, event):
+
         decision = wx.MessageBox("¿Está seguro de que desea salir?", "Salir", wx.YES_NO |
                                  wx.ICON_ASTERISK | wx.CENTER | wx.CANCEL)
         if decision == 2:
             self.Close(True)
+            return
+        
+        self.SetFocus()
+    
+    def cleanThings(self, event):
+        self.Destroy()
 
     def ShowShortcuts(self, event):
         # TODO: Implementar una ventana que muestre los atajos para cambiar el
@@ -125,3 +153,4 @@ class MainFrame(wx.Frame):
         # por el momento, solo emite un mensaje cualquiera
         wx.MessageBox("En desarrollo (-_- ) z z z", "En desarrollo", wx.OK |
                       wx.ICON_HAND | wx.CENTER)
+        self.SetFocus()

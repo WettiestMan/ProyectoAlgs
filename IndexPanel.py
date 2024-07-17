@@ -32,7 +32,6 @@ class IndexPanel(wx.Panel):
 
     def addButton(self, header):
 
-        
         button = wx.Button(self, label=header.contents[0])
         button.Bind(wx.EVT_BUTTON, lambda event: self.Parent.GetWindow2().moveToHeader(header.get("id")))
 
