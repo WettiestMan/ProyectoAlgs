@@ -14,11 +14,23 @@ class HtmlPanel(wx.Panel):
 
 
         self.browser = wx.html2.WebView.New(self)
+        # Bind the key event to the custom handler
+        self.browser.Bind(wx.EVT_CHAR, self.on_key_char)
         self.setHtmlContent("")
+
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.browser, 1, wx.EXPAND)
         self.SetSizer(sizer)
+        
+    def on_key_char(self, event):
+        # Prevent the default behavior for key events
+        # You can specify conditions to disable specific shortcuts
+        keycode = event.GetKeyCode()
+        if keycode in [wx.WXK_CONTROL, wx.WXK_SHIFT, wx.WXK_ALT, wx.WXK_COMMAND]:
+            event.Skip()
+        else:
+            return  # Prevent default behavior for other keys        
 
     
     def setHtmlContent(self, HtmlContent):
