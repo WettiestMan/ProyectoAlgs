@@ -47,13 +47,14 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.cleanThings)
 
         self.Show()
+
     
     def focusOnWebView(self, evt):
         self.htmlPanel.SetFocus()
     
     def focusOnToc(self, evt):
         self.buttonsPanel.SetFocus()
-    
+
     def createMenu(self):
 
         try:
@@ -97,8 +98,9 @@ class MainFrame(wx.Frame):
 
             self.SetMenuBar(menuBar)
 
-        except Exception:
-            print("???")
+        except Exception as e:
+            print(e)
+
 
     def OpenFile(self, event):
 
@@ -134,6 +136,28 @@ class MainFrame(wx.Frame):
             None)
 
     
+    def handle_key_event(self, modifiers, keycode):
+        # Custom logic to handle specific key events
+        # Return True if the event is handled, otherwise False
+        if modifiers == wx.ACCEL_CTRL and keycode == ord('R'):
+            self.on_ctrl_r(None)
+            return True  # Prevent default behavior
+        elif modifiers == wx.ACCEL_CTRL and keycode == ord('T'):
+            self.on_ctrl_t(None)
+            return True  # Prevent default behavior
+        
+        # Add more custom key handling as needed
+        return False
+
+    def on_ctrl_r(self, event):
+        # Handle Ctrl+R key event (for example, prevent refresh)
+        print("Ctrl+R pressed - Refresh prevented")
+
+    def on_ctrl_t(self, event):
+        # Handle Ctrl+T key event
+        print("Ctrl+T pressed")
+    
+
     def CloseApp(self, event):
 
         decision = wx.MessageBox("¿Está seguro de que desea salir?", "Salir", wx.YES_NO |

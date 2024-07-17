@@ -5,36 +5,48 @@ import wx.html as html
 
 class HtmlPanel(wx.Panel):
     
-    def __init__ (self, parent, html="", size=(400, 600), *args, **kwargs):
+    def __init__ (self, parent, parent_frame, size=(400, 600), *args, **kwargs):
         
         super(HtmlPanel, self).__init__(parent, *args, **kwargs)
-
+        self.parent = parent_frame
 
         self.SetMinSize((800, 700))
 
-
         self.browser = wx.html2.WebView.New(self)
-        # Bind the key event to the custom handler
-        self.browser.Bind(wx.EVT_CHAR, self.on_key_char)
-        self.setHtmlContent("")
-
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.browser, 1, wx.EXPAND)
         self.SetSizer(sizer)
+
         
+        # Bind the key event to the frame
+        self.browser.Bind(wx.EVT_CHAR_HOOK, self.on_key_char)
+
     def on_key_char(self, event):
-        # Prevent the default behavior for key events
-        # You can specify conditions to disable specific shortcuts
         keycode = event.GetKeyCode()
-        if keycode in [wx.WXK_CONTROL, wx.WXK_SHIFT, wx.WXK_ALT, wx.WXK_COMMAND]:
-            event.Skip()
-        else:
-            return  # Prevent default behavior for other keys        
+        modifiers = self.get_modifiers(event)
+        
+        # Redirect the key event to the main app's handlers
+        if self.parent.handle_key_event(modifiers, keycode):
+            return  # Prevent default behavior if handled
+        event.Skip()
+
+    def get_modifiers(self, event):
+        modifiers = 0
+        if event.ControlDown():
+            modifiers |= wx.ACCEL_CTRL
+        if event.ShiftDown():
+            modifiers |= wx.ACCEL_SHIFT
+        if event.AltDown():
+            modifiers |= wx.ACCEL_ALT
+        if event.MetaDown():
+            modifiers |= wx.ACCEL_CMD
+        return modifiers
 
     
     def setHtmlContent(self, HtmlContent):
         self.browser.SetPage(HtmlContent, "")
+
 
     def moveToHeader(self, headerId):
         script = f"document.getElementById('{headerId}').scrollIntoView();"
