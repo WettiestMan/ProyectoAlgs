@@ -24,6 +24,8 @@ Revisen el TODO del HtmlPanel también porque el atributo size está con un valo
 class MainFrame(wx.Frame):
     
     def __init__(self, parent, title):
+
+        self.headers = ""
         
         # forwarding params
         wx.Frame.__init__(self, parent, -1 , title)

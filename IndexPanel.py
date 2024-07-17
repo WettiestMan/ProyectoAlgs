@@ -1,7 +1,7 @@
 import wx
 import wx.html2
 from bs4 import BeautifulSoup
-import markdown
+import ai
 import re
 
 class IndexPanel(wx.Panel):
@@ -21,12 +21,16 @@ class IndexPanel(wx.Panel):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         
         soup = BeautifulSoup(context, features='lxml')
+        headers = ""
         for header in soup.findAll(re.compile("^h[1-6]$")):
+            headers += (header.contents[0] + ", ")
             self.addButton(header)
 
         self.SetSizer(self.sizer)
         self.Layout()
         self.Update()
+
+        print(ai.get_resume(headers))
 
 
     def addButton(self, header):
