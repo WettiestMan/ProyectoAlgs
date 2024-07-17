@@ -6,6 +6,7 @@ from txting import MarkdownDoc
 from Accesible import HTMLWndAccessibilityImpl
 from IndexPanel import IndexPanel
 import markdown
+from resumemodel import ResumeGen
 
 """
 Fun fact: las funciones y constantes que realizan centrado están escritas tanto en inglés americano
@@ -72,6 +73,10 @@ class MainFrame(wx.Frame):
 
             helpSubMenu = wx.Menu()
 
+            resumeItem = helpSubMenu.Append(wx.NewId(), "&Generar resumen\tCtrl-G",
+                                            "Obtener un resumen del texto en el lector")
+            self.Bind(wx.EVT_MENU, self.GenerateResume, resumeItem)
+
             helpItem = helpSubMenu.Append(wx.ID_HELP_COMMANDS, 'A&tajos\tCtrl-H',
                                         "Mostrar atajos del teclado")
             self.Bind(wx.EVT_MENU, self.ShowShortcuts, helpItem)
@@ -100,6 +105,7 @@ class MainFrame(wx.Frame):
                 (wx.ACCEL_CTRL, ord('O'), openItem.GetId()),
                 (wx.ACCEL_CTRL, ord('Q'), exitItem.GetId()),
                 (wx.ACCEL_CTRL, ord('H'), helpItem.GetId()),
+                (wx.ACCEL_CTRL, ord('G'), resumeItem.GetId()),
                 (wx.ACCEL_ALT, ord('1'), focusWebViewId),
                 (wx.ACCEL_ALT, ord('2'), focusTocId)
             ]
@@ -123,6 +129,7 @@ class MainFrame(wx.Frame):
                                     style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fdialg:
             
             if fdialg.ShowModal() == wx.ID_CANCEL:
+                self.htmlStr = ""
                 self.SetFocus()
                 return
             
@@ -135,9 +142,9 @@ class MainFrame(wx.Frame):
         try:
             with (open(filepath, 'r', encoding='UTF-8')) as file:
                 
-                html = markdown.markdown(file.read(), extensions=["toc"])
-                self.htmlPanel.setHtmlContent(html)
-                self.buttonsPanel.updateContext(html)
+                self.htmlStr = markdown.markdown(file.read(), extensions=["toc"])
+                self.htmlPanel.setHtmlContent(self.htmlStr)
+                self.buttonsPanel.updateContext(self.htmlStr)
         except OSError:
             wx.MessageBox(f"""
             El archivo {filepath} no pudo ser abierto.
@@ -168,6 +175,19 @@ class MainFrame(wx.Frame):
         # Handle Ctrl+T key event
         print("Ctrl+T pressed")
     
+    def GenerateResume(self, event):
+        if(hasattr(self, "htmlStr") and self.htmlStr != ""):
+            headers = ResumeGen.reduceText(self.htmlStr)
+            # you can write your logic in generate, or do it however you want
+            resume = ResumeGen.generate(headers)
+
+            wx.MessageBox(resume, "Resumen del texto", wx.ICON_QUESTION | wx.CENTER)
+            self.SetFocus()
+        else:
+            wx.MessageBox("por favor, cargue un documento antes de usar", "Nada para resumir", wx.ICON_ASTERISK
+                           | wx.CENTER)
+            self.SetFocus()
+
 
     def CloseApp(self, event):
 
@@ -192,6 +212,7 @@ Alt + 2: Dirigirse a la tabla de contenidos.
 Otras combinaciones con Alt:
 A: Menú archivo, Y: menú ayuda, V: menú ventana.
 Ctrl + O: Abrir un documento.
+Ctrl + G: Generar un resumen del texto actual.
 Ctrl + Q: Cerrar el programa.
 Ctrl + H: Mostrar esta ayuda.
 """
