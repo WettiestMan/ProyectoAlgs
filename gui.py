@@ -26,7 +26,6 @@ class MainFrame(wx.Frame):
     
     def __init__(self, parent, title):
 
-        self.headers = ""
         
         # forwarding params
         wx.Frame.__init__(self, parent, -1 , title)

@@ -12,7 +12,6 @@ def get_resume(text):
         return
     
     template = 'based on the following headers, make a resume parragraf alike of 150 word tring to guess what the text is about, with out mention that you are besed on header "{0}"'.format(text)
-    print(template)
 
     response = rtx_api.send_message(template)
 
