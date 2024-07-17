@@ -75,10 +75,21 @@ class MainFrame(wx.Frame):
             helpItem = helpSubMenu.Append(wx.ID_HELP_COMMANDS, 'A&tajos\tCtrl-H',
                                         "Mostrar atajos del teclado")
             self.Bind(wx.EVT_MENU, self.ShowShortcuts, helpItem)
+
+            windowSubMenu = wx.Menu()
+
+            tocItem = windowSubMenu.Append(wx.NewId(), "&Tabla de contenidos",
+                                           "Acceda a la tabla de contenidos, o salga del lector")
+            self.Bind(wx.EVT_MENU, self.focusOnToc, tocItem)
+
+            webViewItem = windowSubMenu.Append(wx.NewId(), "&Lector",
+                                               "Acceda al lector")
+            self.Bind(wx.EVT_MENU, self.focusOnWebView, webViewItem)
             
             menuBar = wx.MenuBar()
             menuBar.Append(fileSubMenu, "&Archivo")
             menuBar.Append(helpSubMenu, "A&yuda")
+            menuBar.Append(windowSubMenu, "&Ventana")
 
             (focusWebViewId, focusTocId) = [wx.NewId() for i in range(2)]
 
@@ -175,6 +186,15 @@ class MainFrame(wx.Frame):
         # TODO: Implementar una ventana que muestre los atajos para cambiar el
         # 'focus' a un elemento de la ventana
         # por el momento, solo emite un mensaje cualquiera
-        wx.MessageBox("En desarrollo (-_- ) z z z", "En desarrollo", wx.OK |
-                      wx.ICON_HAND | wx.CENTER)
+        message = """
+Alt + 1: Dirigirse al lector.
+Alt + 2: Dirigirse a la tabla de contenidos.
+Otras combinaciones con Alt:
+A: Menú archivo, Y: menú ayuda, V: menú ventana.
+Ctrl + O: Abrir un documento.
+Ctrl + Q: Cerrar el programa.
+Ctrl + H: Mostrar esta ayuda.
+"""
+        wx.MessageBox(message, "Controles", wx.OK |
+                      wx.ICON_INFORMATION | wx.CENTER)
         self.SetFocus()

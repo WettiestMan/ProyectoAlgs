@@ -25,9 +25,8 @@ class IndexPanel(wx.Panel):
             self.addButton(header)
 
         self.SetSizer(self.sizer)
-        self.sizer.Layout()
+        self.Layout()
         self.Update()
-        self.Refresh()
 
 
     def addButton(self, header):
