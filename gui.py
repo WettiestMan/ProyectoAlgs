@@ -7,6 +7,7 @@ from Accesible import HTMLWndAccessibilityImpl
 from IndexPanel import IndexPanel
 import markdown
 from resumemodel import ResumeGen
+from bs4 import BeautifulSoup as bs
 
 """
 Fun fact: las funciones y constantes que realizan centrado están escritas tanto en inglés americano
@@ -78,6 +79,11 @@ class MainFrame(wx.Frame):
                                             "Obtener un resumen del texto en el lector")
             self.Bind(wx.EVT_MENU, self.GenerateResume, resumeItem)
 
+            
+            smartResumeItem = helpSubMenu.Append(wx.NewId(), "Generar &Smart resumen\tCtrl-F",
+                                            "Obtener un resumen de todo el texto")
+            self.Bind(wx.EVT_MENU, self.GenerateSmartResume, smartResumeItem)
+
             helpItem = helpSubMenu.Append(wx.ID_HELP_COMMANDS, 'A&tajos\tCtrl-H',
                                         "Mostrar atajos del teclado")
             self.Bind(wx.EVT_MENU, self.ShowShortcuts, helpItem)
@@ -107,6 +113,7 @@ class MainFrame(wx.Frame):
                 (wx.ACCEL_CTRL, ord('Q'), exitItem.GetId()),
                 (wx.ACCEL_CTRL, ord('H'), helpItem.GetId()),
                 (wx.ACCEL_CTRL, ord('G'), resumeItem.GetId()),
+                (wx.ACCEL_CTRL, ord('F'), smartResumeItem.GetId()),
                 (wx.ACCEL_ALT, ord('1'), focusWebViewId),
                 (wx.ACCEL_ALT, ord('2'), focusTocId)
             ]
@@ -189,6 +196,18 @@ class MainFrame(wx.Frame):
                            | wx.CENTER)
             self.SetFocus()
 
+
+    def GenerateSmartResume(self, event):
+        if(hasattr(self, "htmlStr") and self.htmlStr != ""):
+            # you can write your logic in generate, or do it however you want
+            resume = ResumeGen.generateSmart(bs(self.htmlStr).findAll(text=True))
+
+            wx.MessageBox(resume, "Resumen inteligente del texto", wx.ICON_QUESTION | wx.CENTER)
+            self.SetFocus()
+        else:
+            wx.MessageBox("por favor, cargue un documento antes de usar", "Nada para resumir", wx.ICON_ASTERISK
+                           | wx.CENTER)
+            self.SetFocus()
 
     def CloseApp(self, event):
 

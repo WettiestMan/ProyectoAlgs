@@ -18,3 +18,8 @@ class ResumeGen:
     def generate (text):
         
         return ai.get_resume(text)
+    
+    @staticmethod
+    def generateSmart (text):
+        
+        return ai.smart_resume(text)
